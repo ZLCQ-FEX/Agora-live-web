@@ -1,0 +1,12 @@
+0 silly argv { _: [ 'add' ],
+0 silly argv   scope: '@demo/my-test',
+0 silly argv   globs: [],
+0 silly argv   lernaVersion: '3.20.2',
+0 silly argv   '$0':
+0 silly argv    '/Users/inter/Desktop/work/frontend/qie-agora-umi/node_modules/.bin/lerna',
+0 silly argv   pkg: '@demo/umi-origin-test' }
+1 notice cli v3.20.2
+2 verbose rootPath /Users/inter/Desktop/work/frontend/qie-agora-umi
+3 info versioning independent
+4 error Error: 404 Not Found - GET https://registry.npmjs.com/@demo%2fumi-origin-test - Not found
+4 error     at res.buffer.catch.then.body (/Users/inter/Desktop/work/frontend/qie-agora-umi/node_modules/@evocateur/npm-registry-fetch/check-response.js:104:15)

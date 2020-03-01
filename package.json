@@ -1,0 +1,56 @@
+{
+  "name": "qie-agora-umi",
+  "version": "0.0.1",
+  "description": "基于agora的多人互动直播项目",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "packages/components"
+  ],
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "authors": {
+    "name": "inter",
+    "email": ""
+  },
+  "repository": "/qie-agora-umi",
+  "scripts": {
+    "dev": "father doc dev",
+    "build": "father build",
+    "lerna": "lerna",
+    "lint-staged:js": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "validate-commit-msg"
+    }
+  },
+  "lint-staged": {
+    "**/*.less": "stylelint --syntax less",
+    "**/*.{js,jsx,tsx,ts,less,md,json}": [
+      "prettier --write",
+      "git add"
+    ],
+    "**/*.{js,jsx}": "yarn run lint-staged:js",
+    "**/*.{js,ts,tsx}": "yarn run lint-staged:js",
+    "yarn.lock": [
+      "git rm --cached"
+    ]
+  },
+  "peerDependencies": {
+    "react": "16.x"
+  },
+  "devDependencies": {
+    "father": "^2.16.0",
+    "lerna": "^3.20.2",
+    "lint-staged": "^10.0.8",
+    "typescript": "^3.3.3",
+    "umi": "^2.13.3"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "agora-rtc-sdk": "^3.0.1"
+  }
+}

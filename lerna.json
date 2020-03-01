@@ -1,0 +1,17 @@
+{
+  "packages": [
+    "packages/@demo/*",
+    "packages/components"
+  ],
+  "npmclient": "yarn",
+  "version": "independent",
+  "useWorkspaces": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "conmand": {
+    "bootstrap": {
+      "hoist": true
+    }
+  }
+}
