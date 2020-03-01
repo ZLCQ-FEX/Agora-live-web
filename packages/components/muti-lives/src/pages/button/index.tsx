@@ -8,7 +8,6 @@ class Button extends Component<{ name: string }> {
         return (
             <div>
                 {name}
-                <img src={require('../../assets/1.jpg')} alt=""/>
             </div>
         );
     }
