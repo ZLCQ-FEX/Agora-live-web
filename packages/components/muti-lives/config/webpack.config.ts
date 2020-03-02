@@ -1,6 +1,3 @@
-
-// export default (config, { webpack }) => {
-// }
-export default () => {
-    
-}
+export default (config: any) => {
+  config.devServer.hot(false);
+};

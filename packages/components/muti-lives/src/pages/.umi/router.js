@@ -8,7 +8,7 @@ import {
 import dynamic from 'umi/dynamic';
 import renderRoutes from 'umi/lib/renderRoutes';
 import history from '@@/history';
-import RendererWrapper0 from '/Users/inter/Desktop/work/frontend/qie-agora-umi/packages/components/muti-lives/src/pages/.umi/LocaleWrapper.jsx';
+import RendererWrapper0 from '/Users/qietv/Desktop/frontend/web/qie-agora-umi/packages/components/muti-lives/src/pages/.umi/LocaleWrapper.jsx';
 import { routerRedux, dynamic as _dvaDynamic } from 'dva';
 
 const Router = routerRedux.ConnectedRouter;
@@ -18,14 +18,14 @@ const routes = [
     path: '/',
     component: __IS_BROWSER
       ? _dvaDynamic({
-          component: () => import('../button'),
+          component: () => import('../live'),
         })
-      : require('../button').default,
+      : require('../live').default,
     routes: [
       {
         component: () =>
           React.createElement(
-            require('/Users/inter/Desktop/work/frontend/qie-agora-umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
+            require('/Users/qietv/Desktop/frontend/web/qie-agora-umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
               .default,
             { pagesPath: 'src/pages', hasRoutesInConfig: true },
           ),
@@ -39,7 +39,7 @@ const routes = [
   {
     component: () =>
       React.createElement(
-        require('/Users/inter/Desktop/work/frontend/qie-agora-umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
+        require('/Users/qietv/Desktop/frontend/web/qie-agora-umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
           .default,
         { pagesPath: 'src/pages', hasRoutesInConfig: true },
       ),

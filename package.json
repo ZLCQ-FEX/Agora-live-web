@@ -4,8 +4,7 @@
   "description": "基于agora的多人互动直播项目",
   "private": true,
   "workspaces": [
-    "packages/*",
-    "packages/components"
+    "packages/*"
   ],
   "sideEffects": false,
   "main": "dist/index.js",
@@ -19,7 +18,7 @@
     "dev": "father doc dev",
     "build": "father build",
     "lerna": "lerna",
-    "lint-staged:js": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty"
+    "lint-staged:ts": "eslint --ext .js,.jsx,.ts,.tsx --format=pretty"
   },
   "commitlint": {
     "extends": [
@@ -32,8 +31,8 @@
       "prettier --write",
       "git add"
     ],
-    "**/*.{js,jsx}": "yarn run lint-staged:js",
-    "**/*.{js,ts,tsx}": "yarn run lint-staged:js",
+    "**/*.{js,jsx}": "yarn run lint-staged:ts",
+    "**/*.{js,ts,tsx}": "yarn run lint-staged:ts",
     "yarn.lock": [
       "git rm --cached"
     ]
@@ -42,16 +41,28 @@
     "react": "16.x"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
+    "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
+    "@types/agora-rtc-sdk": "^3.0.0",
+    "@typescript-eslint/experimental-utils": "^2.21.0",
+    "@typescript-eslint/typescript-estree": "^2.21.0",
+    "@typescript-eslint/eslint-plugin": "^2.3.3",
+    "@typescript-eslint/parser": "^2.3.3",
+    "eslint-plugin-react-hooks": "^1.6.1",
     "father": "^2.16.0",
+    "husky": "^3.0.9",
     "lerna": "^3.20.2",
     "lint-staged": "^10.0.8",
-    "typescript": "^3.3.3",
-    "umi": "^2.13.3",
-    "husky": "^3.0.9"
+    "typescript": "^3.7.2",
+    "umi": "^2.13.3"
   },
   "license": "MIT",
   "dependencies": {
-    "agora-rtc-sdk": "^3.0.1"
+    "agora-rtc-sdk": "^3.0.1",
+    "pubsub-js": "^1.8.0"
+  },
+  "resolutions": {
+    "docz-core/typescript": "^3.7.2"
   }
 }

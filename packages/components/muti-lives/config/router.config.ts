@@ -3,10 +3,9 @@ const routes = [
   // workplace
   {
     path: '/',
-    component: './button',
-    routes: [
-    ]
+    component: './live',
+    routes: [],
   },
-]
+];
 
-export default routes
+export default routes;

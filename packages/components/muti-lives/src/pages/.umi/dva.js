@@ -20,7 +20,7 @@ export function _onCreate() {
     app.use(plugin);
   });
   
-  app.model({ namespace: 'video', ...(require('/Users/inter/Desktop/work/frontend/qie-agora-umi/packages/components/muti-lives/src/models/video.ts').default) });
+  app.model({ namespace: 'video', ...(require('/Users/qietv/Desktop/frontend/web/qie-agora-umi/packages/components/muti-lives/src/models/video.ts').default) });
   return app;
 }
 
