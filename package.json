@@ -21,11 +21,10 @@
     "lerna": "lerna",
     "lint-staged:js": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "validate-commit-msg"
-    }
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
@@ -43,11 +42,13 @@
     "react": "16.x"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^8.3.4",
     "father": "^2.16.0",
     "lerna": "^3.20.2",
     "lint-staged": "^10.0.8",
     "typescript": "^3.3.3",
-    "umi": "^2.13.3"
+    "umi": "^2.13.3",
+    "husky": "^3.0.9"
   },
   "license": "MIT",
   "dependencies": {

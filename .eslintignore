@@ -1,0 +1,13 @@
+node_modules
+dist
+__tests_
+out
+.umi
+/lambda/mock/**
+/scripts
+/config
+/example
+_test_
+/es
+/lib
+*.log
