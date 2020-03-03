@@ -28,8 +28,7 @@
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
     "**/*.{js,jsx,tsx,ts,less,md,json}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ],
     "**/*.{js,jsx}": "yarn run lint-staged:ts",
     "**/*.{js,ts,tsx}": "yarn run lint-staged:ts",
