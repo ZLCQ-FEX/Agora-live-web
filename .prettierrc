@@ -2,10 +2,18 @@
   "singleQuote": true,
   "trailingComma": "all",
   "printWidth": 100,
+  "tabWidth": 4,
   "overrides": [
     {
       "files": ".prettierrc",
       "options": { "parser": "json" }
+    },
+    {
+        "files": "*.less",
+        "options": {
+            "parser": "less",
+            "endOfLine": "auto"
+        }
     }
   ],
   "parser": "typescript"

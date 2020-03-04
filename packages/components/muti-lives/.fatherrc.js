@@ -1,3 +1,3 @@
 export default {
-  entry: 'src/pages/button/', // 文件打包入口
+    entry: 'src/pages/live/', // 文件打包入口
 };
