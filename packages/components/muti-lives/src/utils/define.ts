@@ -10,3 +10,10 @@ export type LiveConfig = {
     host?: boolean; // 是否为主播
     beauty?: boolean; // 是否开启美颜
 };
+
+export enum Role {
+    OWNER = 'owner', // 主播
+    PLAYER = 'player', // 选手
+    GUEST = 'guest', // 嘉宾
+    VISITOR = 'visitor', // 访客
+}

@@ -5,6 +5,7 @@
         "no-eol-whitespace": null,
         "no-descending-specificity": null,
         "selector-class-pattern": ["^[a-z][a-zA-Z0-9]+$", { "resolveNestedSelectors": true }],
+        "rule-empty-line-before": "never"
     },
     "defaultSeverity": "error"
 }

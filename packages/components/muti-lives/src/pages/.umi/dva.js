@@ -21,7 +21,7 @@ export function _onCreate() {
   });
   
   app.model({ namespace: 'liveConfig', ...(require('/Users/qietv/Desktop/frontend/web/qie-agora-umi/packages/components/muti-lives/src/models/liveConfig.ts').default) });
-app.model({ namespace: 'video', ...(require('/Users/qietv/Desktop/frontend/web/qie-agora-umi/packages/components/muti-lives/src/models/video.ts').default) });
+app.model({ namespace: 'streams', ...(require('/Users/qietv/Desktop/frontend/web/qie-agora-umi/packages/components/muti-lives/src/models/streams.ts').default) });
   return app;
 }
 

@@ -1,0 +1,29 @@
+.container {
+    width: 200px;
+    height: 100px;
+    .menu {
+        visibility: hidden;
+        background-color: rgba(0, 0, 0, 0.7);
+        .actionBtn {
+            .actionIcon {
+                height: 20px;
+                width: 20px;
+            }
+            .actionDes {
+                font-size: 12px;
+                font-family: Arial, Helvetica, sans-serif;
+                color: white;
+                text-align: center;
+            }
+        }
+    }
+    .playerCotainer {
+        height: 100%;
+        width: 100%;
+    }
+    &:hover {
+        .menu {
+            visibility: visible;
+        }
+    }
+}

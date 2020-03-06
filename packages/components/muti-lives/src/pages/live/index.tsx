@@ -1,11 +1,12 @@
 import React, { useMemo, useEffect } from 'react';
 import styles from './index.less';
-import RTCClient from '../../utils//rtc-client';
-import { LiveConfig } from '../../utils//define';
+import RTCClient from '../../utils/rtc-client';
+import { LiveConfig } from '../../utils/define';
 import { connect } from 'dva';
 import { Button } from 'antd';
 import CustomEvents from '../../utils/custom-events';
 import { Stream, StreamPlayError } from 'agora-rtc-sdk';
+// import BypassPlayer from './bypass-player'
 
 interface ILiveProps {
     liveConfig: LiveConfig;
