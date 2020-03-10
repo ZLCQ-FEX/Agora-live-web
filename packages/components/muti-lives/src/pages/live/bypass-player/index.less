@@ -1,10 +1,26 @@
-.container {
+.bypassContainer {
     width: 200px;
     height: 100px;
+    position: relative;
     .menu {
         visibility: hidden;
         background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         .actionBtn {
+            width: 40%;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             .actionIcon {
                 height: 20px;
                 width: 20px;

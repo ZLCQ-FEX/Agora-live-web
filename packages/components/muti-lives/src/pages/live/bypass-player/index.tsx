@@ -8,7 +8,6 @@ export interface IBypassPlayerProps {
     stream: Stream;
     domId: string;
     role: Role;
-    onVideoMute: (mute: boolean) => void;
     onDisconnect: (stream: Stream) => void; // 断开
     onCenterPosition: Function; //c位设置
     onMix: (stream: Stream) => void;
@@ -19,13 +18,11 @@ const BypassPlayer = (props: IBypassPlayerProps) => {
 
     const [state, setState] = useState({
         audioMuted: false,
-        videoMuted: false,
     });
 
     const muteAudio = (mute: boolean) => {
         setState({
             audioMuted: mute,
-            videoMuted: false,
         });
     };
 
@@ -45,8 +42,7 @@ const BypassPlayer = (props: IBypassPlayerProps) => {
                 icon: '',
             },
             {
-                // title: state.audioMuted? '打开' : '关闭',
-                title: 1 ? '打开' : '关闭',
+                title: state.audioMuted ? '打开' : '关闭',
                 enable: true,
                 action: muteAudio,
                 icon: '',
@@ -75,8 +71,8 @@ const BypassPlayer = (props: IBypassPlayerProps) => {
     }, [stream, domId]);
 
     return (
-        <div className={styles.container}>
-            <div className={styles.playerContainer} id={domId} />
+        <div className={styles.bypassContainer}>
+            <div className={styles.playerCotainer} id={domId || ''}></div>
             <div className={styles.menu}>
                 {actionConfig.map((singleActionConfig, menuIdx: number) => {
                     const {
@@ -88,9 +84,10 @@ const BypassPlayer = (props: IBypassPlayerProps) => {
                     return (
                         <div
                             key={`menuItem-${menuIdx}`}
-                            onClick={enable && action && action(stream)}
+                            onClick={() => enable && action && action(stream)}
+                            className={styles.actionBtn}
                         >
-                            <img className={styles.actionIcon} />
+                            <img className={styles.actionIcon} src="" />
                             <div className={styles.actionDes}>{title}</div>
                         </div>
                     );

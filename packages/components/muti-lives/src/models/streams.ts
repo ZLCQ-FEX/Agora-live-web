@@ -14,7 +14,17 @@ export default {
     state: initState(),
 
     reducers: {
-        removeStream(state: Map<string, any>, action: Action) {
+        addCurrentStream(state: Map<string, any>, action: Action) {
+            const { stream } = action.payload;
+            return state.set('currentStream', stream);
+        },
+
+        removeCurrentStream(state: Map<string, any>) {
+            return state.set('currentStream', null);
+        },
+
+        removeOtherStream(state: Map<string, any>, action: Action) {
+            // 移除某个流
             // 移除某一路流
             const { id, callback } = action.payload;
             const otherStreams: Map<string, any> = state.get('otherStreams');
@@ -30,21 +40,22 @@ export default {
             }
         },
 
-        addStream(state: Map<string, any>, action: Action) {
+        addOtherStream(state: Map<string, any>, action: Action) {
+            // 添加某个流
             const { stream, position, callback } = action.payload;
             const otherStreams = state.get('otherStreams');
             const positionStream = otherStreams.get(position);
             if (positionStream === undefined) {
                 callback && callback(true);
                 // 空位置
-                return state.setIn(['otherStreams', position], fromJS(stream));
+                return state.setIn(['otherStreams', position], stream);
             } else {
                 callback && callback(false);
             }
         },
 
         updateMixPostion(state: any) {
-            // 更换合流位置
+            // 更换某个流的位置
             return {
                 ...state,
             };
