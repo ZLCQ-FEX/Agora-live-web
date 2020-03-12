@@ -11,8 +11,11 @@
     "antd": "^3.26.12",
     "react": "16.x"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/classnames": "^2.2.10"
+  },
   "dependencies": {
+    "classnames": "^2.2.6",
     "umi-plugin-react": "^1.15.2"
   }
 }

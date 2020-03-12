@@ -31,8 +31,8 @@ type Option = {
 
 export default class RTCClient {
     public created: boolean; // 是否创建成功
-    private rtc: RTC;
-    private option: Option;
+    public rtc: RTC;
+    public option: Option;
 
     constructor() {
         this.rtc = {
@@ -44,7 +44,7 @@ export default class RTCClient {
             params: {},
         };
         this.option = {
-            appId: process.env.AGORA_ID || '',
+            appId: '7304632c61014fd59a9999658a3d4fd8',
             channel: '',
             uid: null,
             token: '',
@@ -65,7 +65,7 @@ export default class RTCClient {
     };
 
     public destory = () => {
-        this.rtc.client = null;
+        // this.rtc.client = null;
         this.created = false;
     };
 
@@ -97,14 +97,13 @@ export default class RTCClient {
     public createStream = (config: LiveConfig) => {
         return new Promise((reslolve, reject) => {
             const { localStream } = this.rtc;
-            this.option.uid = localStream ? localStream.getId() : config.uid;
             if (localStream) {
                 // 关闭之前存在的流
                 this.stopLocalStream();
             }
             // 流配置
             const rtcStream = AgoraRTC.createStream({
-                streamID: this.option.uid,
+                streamID: this.option.uid || 0,
                 audio: true,
                 video: true,
                 screen: false,
@@ -131,12 +130,13 @@ export default class RTCClient {
                     if (config.muteAudio === true) {
                         rtcStream.muteAudio();
                     }
-                    if (config.beauty === true) {
+                    if (config.beauty === true && this.option.beauty === false) {
+                        // 未开启美颜
                         rtcStream.setBeautyEffectOptions(true, {
                             lighteningContrastLevel: 1,
-                            lighteningLevel: 0.7,
-                            smoothnessLevel: 0.5,
-                            rednessLevel: 0.1,
+                            lighteningLevel: 1,
+                            smoothnessLevel: 1,
+                            rednessLevel: 1,
                         });
                         this.option.beauty = true;
                     }
@@ -153,10 +153,15 @@ export default class RTCClient {
     // 关闭本地流
     public stopLocalStream = () => {
         const { localStream } = this.rtc;
+        const { beauty } = this.option;
         if (localStream) {
             this.stopPublishing();
             if (localStream.isPlaying()) {
                 localStream.stop();
+            }
+            if (beauty) {
+                localStream.setBeautyEffectOptions(false, {});
+                this.option.beauty = false;
             }
             localStream.close();
             this.rtc.localStream = null;
@@ -208,7 +213,9 @@ export default class RTCClient {
                         channel,
                         uid || null,
                         channelUId => {
-                            console.log('join channel: ' + channel + ' success, uid: ' + uid);
+                            console.log(
+                                'join channel: ' + channel + ' success, uid: ' + channelUId,
+                            );
                             this.rtc.joined = true;
                             this.option.uid = channelUId;
                             config.uid = channelUId;
@@ -290,7 +297,6 @@ export default class RTCClient {
 
     // 创建临时的流， 用于检测设备信息
     private createTmpStream = () => {
-        this.option.uid = 0;
         return new Promise(resolve => {
             if (this.rtc.localStream) {
                 // 关闭正在采集的本地流
@@ -298,7 +304,6 @@ export default class RTCClient {
             }
             // 创建rtc 流
             const tmpStream = AgoraRTC.createStream({
-                streamID: this.option.uid,
                 audio: true,
                 video: true,
                 screen: false,
