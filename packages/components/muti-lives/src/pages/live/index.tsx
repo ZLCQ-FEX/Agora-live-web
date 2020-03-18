@@ -16,11 +16,12 @@ message.config({
 
 interface ILiveProps {
     currentStream: Stream;
+    otherStreams: any;
     [value: string]: any;
 }
 
 const Live = (props: ILiveProps & DispatchProp) => {
-    const { currentStream } = props;
+    const { currentStream, otherStreams, dispatch } = props;
 
     // 初始化客户端
     const localClient = useMemo(() => {
@@ -34,10 +35,16 @@ const Live = (props: ILiveProps & DispatchProp) => {
         return client;
     }, []);
 
+    const otherStream = useMemo(() => {
+        const temp = otherStreams.get(1);
+        // debugger
+        return temp;
+    }, [otherStreams]);
+
     // 直播配置
     const [config, changeConfig] = useState({
         token:
-            '0067304632c61014fd59a9999658a3d4fd8IABhcnMNZoJ1VtQDiVqGnv3FxTKmDJrmjhs656jOfJCpfajv/7wAAAAAEAAI1SnxAf5qXgEAAQAA/mpe',
+            '0067304632c61014fd59a9999658a3d4fd8IAAZaOpN6nJLwsoOkevgHxg8uluU3XjFoyx8cDbnwXal8qjv/7wAAAAAEACslRYNRc5yXgEAAQBFznJe',
         channel: 'li',
         microphoneId: undefined,
         cameraId: undefined,
@@ -56,7 +63,6 @@ const Live = (props: ILiveProps & DispatchProp) => {
             CustomEvents.LOCAL_STREAM_INITED,
             (_: string, params: { stream: Stream }) => {
                 const { stream } = params;
-                const { dispatch } = props;
                 // 通知redux
                 dispatch({
                     type: 'streams/addCurrentStream',
@@ -66,6 +72,75 @@ const Live = (props: ILiveProps & DispatchProp) => {
                 });
             },
         );
+        // 其他主播进入频道
+        localClient.observeEvent('stream-added', (event: any) => {
+            const stream: Stream = event.stream;
+            const id = stream.getId();
+            message.info(`有主播进入频道, ${id}`);
+            // 判断是否是自己的id
+            if (![localClient.option.uid, otherStream && otherStream.getId()].includes(id)) {
+                // 嘉宾
+                localClient.subscribeStream(
+                    stream,
+                    {
+                        video: true,
+                        audio: true,
+                    },
+                    err => {
+                        message.error(`订阅流失败, ${err}`);
+                    },
+                );
+                // 添加其他嘉宾的流
+                dispatch({
+                    type: 'streams/addOtherStream',
+                    payload: {
+                        position: 1,
+                        stream: stream,
+                        callback: (success: boolean) => {
+                            if (success) {
+                                // 添加嘉宾的流成功
+                                message.success(`成功添加 ${id} 嘉宾的流`);
+                            }
+                        },
+                    },
+                });
+            }
+        });
+
+        // 其他主播离开频道
+        localClient.observeEvent('stream-removed', (event: any) => {
+            const stream: Stream = event.stream;
+            const id = stream.getId();
+            message.info(`有主播离开频道, ${id}`);
+            localClient.unsubcribeStream(stream, err => {
+                message.error(`取消订阅流失败, ${err}`);
+            });
+        });
+
+        // localClient.observeEvent('peer-online', (event: any) => {
+        //     // 无stream {type: "peer-online", uid: XXX}
+        // })
+
+        localClient.observeEvent('peer-leave', (event: any) => {
+            // const stream: Stream = event.stream
+            const id = event.uid;
+            // message.info(`有主播离开频道, ${id}`)
+            // localClient.unsubcribeStream(stream, (err) => {
+            //     message.error(`取消订阅流失败, ${err}`)
+            // })
+            dispatch({
+                type: 'streams/removeOtherStream',
+                payload: {
+                    id,
+                    callback: (success: boolean) => {
+                        if (success) {
+                            // 移除嘉宾的流成功
+                            message.success(`成功移除 ${id} 嘉宾的流`);
+                        }
+                    },
+                },
+            });
+        });
     };
 
     // 移除监听
@@ -80,6 +155,14 @@ const Live = (props: ILiveProps & DispatchProp) => {
         startObserving();
     };
 
+    // 关闭本地流
+    const stopLocalStream = () => {
+        localClient.stopLocalStream();
+        dispatch({
+            type: 'streams/removeCurrentStream',
+        });
+    };
+
     // 切换角色
     const changeRole = (event: any) => {
         const role = event.target.value;
@@ -90,8 +173,10 @@ const Live = (props: ILiveProps & DispatchProp) => {
         });
     };
 
-    // 加入房间
+    // 加入房间 会自动开启本地流
     const joinChannel = () => {
+        // 监听事件
+        startObserving();
         localClient
             .join(config)
             .then(() => {
@@ -108,7 +193,9 @@ const Live = (props: ILiveProps & DispatchProp) => {
 
     // 开启直播
     const publish = () => {
-        localClient.publish();
+        localClient.publish((err: any) => {
+            message.error(`推流到远端失败, ${err}`);
+        });
     };
 
     // 离开房间
@@ -117,6 +204,7 @@ const Live = (props: ILiveProps & DispatchProp) => {
             .leave()
             .then(() => {
                 message.success('退出频道成功');
+                stopLocalStream();
             })
             .catch(err => {
                 message.error(`${err}`);
@@ -154,29 +242,28 @@ const Live = (props: ILiveProps & DispatchProp) => {
             removeObserve();
         };
     }, []);
-
     return (
         <div className={styles.liveContainer}>
             <div className={styles.playerContainer}>
                 <StreamPlayer role={Role.OWNER} domId={'owner'} stream={currentStream} />
             </div>
-            <StreamPlayer
-                role={Role.GUEST}
-                domId={'other'}
-                stream={currentStream}
-                onDisconnect={onDisconnect}
-                onCenterPosition={onCenterPosition}
-                onMix={onMix}
-            />
-            <Button onClick={startLocalStream}>start local stream</Button>
+            <div className={styles.otherContainer}>
+                <StreamPlayer
+                    role={Role.GUEST}
+                    domId={'other'}
+                    stream={otherStream}
+                    onDisconnect={onDisconnect}
+                    onCenterPosition={onCenterPosition}
+                    onMix={onMix}
+                />
+            </div>
+            <Button onClick={startLocalStream}>开启本地流（测试本地流）</Button>
+            <Button onClick={stopLocalStream}>停止本地流</Button>
             <Button onClick={joinChannel}>加入房间</Button>
-            <Button
-                onClick={publish}
-                type={'primary'}
-                disabled={[false, 'pending'].includes(localClient.rtc.joined)}
-            >
-                开启直播
+            <Button onClick={publish} type={'primary'} disabled={!localClient.rtc.joined}>
+                推流到远端
             </Button>
+            <Button disabled={!localClient.rtc.published}>停止推流到远端</Button>
             <Button onClick={leaveChannel}>离开房间</Button>
             <RadioGroup onChange={changeRole}>
                 <Radio value="host">主播</Radio>
@@ -188,4 +275,5 @@ const Live = (props: ILiveProps & DispatchProp) => {
 
 export default connect(({ streams }: any) => ({
     currentStream: streams.get('currentStream'),
+    otherStreams: streams.get('otherStreams'),
 }))(Live);

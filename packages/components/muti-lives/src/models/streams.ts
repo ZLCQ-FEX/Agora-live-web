@@ -28,12 +28,12 @@ export default {
             // 移除某一路流
             const { id, callback } = action.payload;
             const otherStreams: Map<string, any> = state.get('otherStreams');
-            const index = otherStreams.valueSeq().findIndex((stream: Stream) => {
+            const stream = otherStreams.valueSeq().find((stream: Stream) => {
                 return stream.getId() === id;
             });
-            if (index !== -1) {
+            if (stream) {
                 callback && callback(true);
-                return state.setIn(['otherStreams', index], null);
+                return state.setIn(['otherStreams', otherStreams.keyOf(stream)], null);
             } else {
                 callback && callback(false);
                 return state;
@@ -51,6 +51,7 @@ export default {
                 return state.setIn(['otherStreams', position], stream);
             } else {
                 callback && callback(false);
+                return state;
             }
         },
 

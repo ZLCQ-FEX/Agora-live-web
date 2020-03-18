@@ -5,7 +5,7 @@ import { LiveConfig } from './define';
 
 type RTC = {
     client: Client | null;
-    joined: boolean | 'pending';
+    joined: boolean;
     published: boolean;
     localStream: Stream | null;
     remoteStreams: Array<any>;
@@ -20,7 +20,6 @@ type AgoraErr = {
 
 type Option = {
     appId: string;
-    channel: string;
     uid: any;
     token: string;
     role: 'audience' | 'host';
@@ -44,8 +43,7 @@ export default class RTCClient {
             params: {},
         };
         this.option = {
-            appId: '7304632c61014fd59a9999658a3d4fd8',
-            channel: '',
+            appId: '587f5bb2355b45998467bedb569f0127',
             uid: null,
             token: '',
             role: 'audience',
@@ -130,16 +128,16 @@ export default class RTCClient {
                     if (config.muteAudio === true) {
                         rtcStream.muteAudio();
                     }
-                    if (config.beauty === true && this.option.beauty === false) {
-                        // 未开启美颜
-                        rtcStream.setBeautyEffectOptions(true, {
-                            lighteningContrastLevel: 1,
-                            lighteningLevel: 1,
-                            smoothnessLevel: 1,
-                            rednessLevel: 1,
-                        });
-                        this.option.beauty = true;
-                    }
+                    // if (config.beauty === true && this.option.beauty === false) {
+                    //     // 未开启美颜
+                    //     rtcStream.setBeautyEffectOptions(true, {
+                    //         lighteningContrastLevel: 1,
+                    //         lighteningLevel: 1,
+                    //         smoothnessLevel: 1,
+                    //         rednessLevel: 1,
+                    //     });
+                    //     this.option.beauty = true;
+                    // }
                     reslolve && reslolve();
                 },
                 (err: AgoraErr) => {
@@ -153,16 +151,20 @@ export default class RTCClient {
     // 关闭本地流
     public stopLocalStream = () => {
         const { localStream } = this.rtc;
-        const { beauty } = this.option;
+        // const { beauty } = this.option;
         if (localStream) {
-            this.stopPublishing();
+            if (this.rtc.joined) {
+                this.stopPublishing((err: any) => {
+                    console.log('停止推流失败', err);
+                });
+            }
             if (localStream.isPlaying()) {
                 localStream.stop();
             }
-            if (beauty) {
-                localStream.setBeautyEffectOptions(false, {});
-                this.option.beauty = false;
-            }
+            // if (beauty) {
+            //     localStream.setBeautyEffectOptions(false, {});
+            //     this.option.beauty = false;
+            // }
             localStream.close();
             this.rtc.localStream = null;
         }
@@ -201,7 +203,6 @@ export default class RTCClient {
 
     // 加入频道
     public join = (config: LiveConfig) => {
-        this.rtc.joined = 'pending';
         return new Promise((resolve, reject) => {
             this.rtc.params = config;
             this.rtc.client!.init(
@@ -249,24 +250,29 @@ export default class RTCClient {
     };
 
     // 推流
-    public publish = () => {
+    public publish = (failedCallback: Function) => {
         const { client, localStream } = this.rtc;
         if (client && localStream) {
             client.publish(localStream, err => {
+                this.rtc.published = false;
+                failedCallback(err);
                 console.log('推流失败', err);
             });
+            this.rtc.published = true;
         }
     };
 
     // 停止推流
-    public stopPublishing = () => {
+    public stopPublishing = (failedCallback: Function) => {
         const { client, localStream } = this.rtc;
         if (!client || !localStream) {
             return;
         }
         client.unpublish(localStream, err => {
+            failedCallback(err);
             console.log('停止推流失败', err);
         });
+        this.rtc.published = false;
     };
 
     // 离开频道
@@ -278,6 +284,7 @@ export default class RTCClient {
                 client.leave(
                     () => {
                         this.rtc.joined = false;
+                        this.rtc.published = false;
                         this.option.uid = null;
                         this.destory();
                         if (localStream && beauty) {

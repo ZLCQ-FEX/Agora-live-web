@@ -69,6 +69,7 @@ const StreamPlayer = (props: IStreamPlayerProps) => {
         if (stream) {
             // 播放
             if (!stream.isPlaying()) {
+                // debugger
                 lockPlay.current = true;
                 stream.play(domId, { fit: 'cover' }, (err: StreamPlayError | null) => {
                     if (err && err.status !== 'aborted') {
@@ -101,7 +102,7 @@ const StreamPlayer = (props: IStreamPlayerProps) => {
                 })}
                 id={domId}
             ></div>
-            <Button onClick={resumePlaying}>继续播放</Button>
+            <Button onClick={resumePlaying}>{stream && stream.getId()}</Button>
             {Role.OWNER !== role ? (
                 <div className={styles.menu}>
                     {actionConfig.map((singleActionConfig, menuIdx: number) => {
