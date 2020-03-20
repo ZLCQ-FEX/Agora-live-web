@@ -43,7 +43,7 @@ export default class RTCClient {
             params: {},
         };
         this.option = {
-            appId: '587f5bb2355b45998467bedb569f0127',
+            appId: '7304632c61014fd59a9999658a3d4fd8',
             uid: null,
             token: '',
             role: 'audience',
@@ -158,13 +158,14 @@ export default class RTCClient {
                     console.log('停止推流失败', err);
                 });
             }
-            if (localStream.isPlaying()) {
-                localStream.stop();
-            }
+            // stop前必须关闭美颜
             // if (beauty) {
             //     localStream.setBeautyEffectOptions(false, {});
             //     this.option.beauty = false;
             // }
+            if (localStream.isPlaying()) {
+                localStream.stop();
+            }
             localStream.close();
             this.rtc.localStream = null;
         }
@@ -182,6 +183,11 @@ export default class RTCClient {
     // 取消订阅
     public unsubcribeStream = (stream: Stream, failedCallback: (err: string) => void) => {
         this.rtc.client && this.rtc.client.unsubscribe(stream, failedCallback);
+    };
+
+    // 大小流
+    public setRemoteVideoStreamType = (stream: Stream, type: 0 | 1) => {
+        this.rtc.client && this.rtc.client.setRemoteVideoStreamType(stream, type);
     };
 
     // 获取设备信息, 在非直播时调用， 否则会中断
@@ -224,6 +230,10 @@ export default class RTCClient {
                                 // 主播
                                 this.createStream(config)
                                     .then(() => {
+                                        // 开启双流
+                                        this.enableDualStreams();
+                                        // 设置小流的配置
+                                        this.setLowStreamParameter();
                                         resolve();
                                     })
                                     .catch(err => {
@@ -265,9 +275,15 @@ export default class RTCClient {
     // 停止推流
     public stopPublishing = (failedCallback: Function) => {
         const { client, localStream } = this.rtc;
+        // const { beauty } = this.option
         if (!client || !localStream) {
             return;
         }
+        // unpublish前必须关闭美颜
+        // if (beauty) {
+        //     localStream.setBeautyEffectOptions(false, {});
+        //     this.option.beauty = false;
+        // }
         client.unpublish(localStream, err => {
             failedCallback(err);
             console.log('停止推流失败', err);
@@ -281,16 +297,17 @@ export default class RTCClient {
         const { beauty } = this.option;
         return new Promise((resolve, reject) => {
             if (client) {
+                //leave前需要先关闭美颜
+                if (localStream && beauty) {
+                    localStream.setBeautyEffectOptions(false, {});
+                    this.option.beauty = false;
+                }
                 client.leave(
                     () => {
                         this.rtc.joined = false;
                         this.rtc.published = false;
                         this.option.uid = null;
                         this.destory();
-                        if (localStream && beauty) {
-                            localStream.setBeautyEffectOptions(false, {});
-                            this.option.beauty = false;
-                        }
                         resolve();
                     },
                     err => {
@@ -299,6 +316,21 @@ export default class RTCClient {
                     },
                 );
             }
+        });
+    };
+
+    // 在join后开启双流模式(大流/小流)
+    private enableDualStreams = () => {
+        this.rtc.client!.enableDualStream();
+    };
+
+    // 设置小流的帧率、码率和分辨率
+    private setLowStreamParameter = () => {
+        this.rtc.client!.setLowStreamParameter({
+            width: 120,
+            height: 120,
+            framerate: 15,
+            bitrate: 120,
         });
     };
 

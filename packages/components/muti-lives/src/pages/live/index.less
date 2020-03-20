@@ -1,12 +1,17 @@
 .liveContainer {
     width: 750px;
-    height: 421px;
     .playerContainer {
         height: 300px;
         width: 500px;
     }
-    .otherContainer {
-        height: 100px;
-        width: 200px;
+    .othersContainer {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        .othersStreamPlayer {
+            height: 100px;
+            width: 200px;
+        }
     }
 }

@@ -35,16 +35,10 @@ const Live = (props: ILiveProps & DispatchProp) => {
         return client;
     }, []);
 
-    const otherStream = useMemo(() => {
-        const temp = otherStreams.get(1);
-        // debugger
-        return temp;
-    }, [otherStreams]);
-
     // 直播配置
     const [config, changeConfig] = useState({
         token:
-            '0067304632c61014fd59a9999658a3d4fd8IAAZaOpN6nJLwsoOkevgHxg8uluU3XjFoyx8cDbnwXal8qjv/7wAAAAAEACslRYNRc5yXgEAAQBFznJe',
+            '0067304632c61014fd59a9999658a3d4fd8IADbOGL+jsEXDrIP08xfrQzLDPHS97I17Ljahx1A86YT8ajv/7wAAAAAEAB6iyp0unl1XgEAAQDYeXVe',
         channel: 'li',
         microphoneId: undefined,
         cameraId: undefined,
@@ -78,28 +72,30 @@ const Live = (props: ILiveProps & DispatchProp) => {
             const id = stream.getId();
             message.info(`有主播进入频道, ${id}`);
             // 判断是否是自己的id
-            if (![localClient.option.uid, otherStream && otherStream.getId()].includes(id)) {
-                // 嘉宾
-                localClient.subscribeStream(
-                    stream,
-                    {
-                        video: true,
-                        audio: true,
-                    },
-                    err => {
-                        message.error(`订阅流失败, ${err}`);
-                    },
-                );
+            if (localClient.option.uid !== id) {
                 // 添加其他嘉宾的流
                 dispatch({
                     type: 'streams/addOtherStream',
                     payload: {
-                        position: 1,
+                        position: null, // 不传自动分配空位置
                         stream: stream,
                         callback: (success: boolean) => {
                             if (success) {
                                 // 添加嘉宾的流成功
                                 message.success(`成功添加 ${id} 嘉宾的流`);
+                                // 订阅嘉宾
+                                localClient.subscribeStream(
+                                    stream,
+                                    {
+                                        video: true,
+                                        audio: true,
+                                    },
+                                    err => {
+                                        message.error(`订阅流失败, ${err}`);
+                                    },
+                                );
+                                // 切换成小流
+                                localClient.setRemoteVideoStreamType(stream, 1);
                             }
                         },
                     },
@@ -247,15 +243,26 @@ const Live = (props: ILiveProps & DispatchProp) => {
             <div className={styles.playerContainer}>
                 <StreamPlayer role={Role.OWNER} domId={'owner'} stream={currentStream} />
             </div>
-            <div className={styles.otherContainer}>
-                <StreamPlayer
-                    role={Role.GUEST}
-                    domId={'other'}
-                    stream={otherStream}
-                    onDisconnect={onDisconnect}
-                    onCenterPosition={onCenterPosition}
-                    onMix={onMix}
-                />
+            <div className={styles.othersContainer}>
+                {otherStreams.map((otherStream: Stream, streamPosition: number) => {
+                    return (
+                        <div
+                            className={styles.othersStreamPlayer}
+                            key={`otherStream-${streamPosition}`}
+                        >
+                            {otherStream ? (
+                                <StreamPlayer
+                                    role={Role.GUEST}
+                                    domId={`other-${streamPosition}`}
+                                    stream={otherStream}
+                                    onDisconnect={onDisconnect}
+                                    onCenterPosition={onCenterPosition}
+                                    onMix={onMix}
+                                />
+                            ) : null}
+                        </div>
+                    );
+                })}
             </div>
             <Button onClick={startLocalStream}>开启本地流（测试本地流）</Button>
             <Button onClick={stopLocalStream}>停止本地流</Button>
