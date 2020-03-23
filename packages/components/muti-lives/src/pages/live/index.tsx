@@ -38,7 +38,7 @@ const Live = (props: ILiveProps & DispatchProp) => {
     // 直播配置
     const [config, changeConfig] = useState({
         token:
-            '0067304632c61014fd59a9999658a3d4fd8IADbOGL+jsEXDrIP08xfrQzLDPHS97I17Ljahx1A86YT8ajv/7wAAAAAEAB6iyp0unl1XgEAAQDYeXVe',
+            '0067304632c61014fd59a9999658a3d4fd8IADit3cXsX2wAwwQ0yknR/ROz04b1e45Y7EO12A5oL/FQ6jv/7wAAAAAEAAIXauOP+F5XgEAAQA+4Xle',
         channel: 'li',
         microphoneId: undefined,
         cameraId: undefined,
