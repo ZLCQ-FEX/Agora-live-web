@@ -1,4 +1,4 @@
-import AgoraRTC, { Client, Stream } from 'agora-rtc-sdk';
+import AgoraRTC, { Client, Stream, LiveTranscoding } from 'agora-rtc-sdk';
 import Pubsub from 'pubsub-js';
 import EventList from './custom-events';
 import { LiveConfig } from './define';
@@ -317,6 +317,27 @@ export default class RTCClient {
                 );
             }
         });
+    };
+
+    // 合流转码
+    public setLiveTranscoding = (
+        config: LiveTranscoding = {
+            width: 640,
+            height: 360,
+            videoBitrate: 400,
+            videoFramerate: 15,
+            audioSampleRate: 48000,
+            audioBitrate: 48,
+            audioChannels: 1,
+            videoGop: 30,
+            videoCodecProfile: 100,
+            userCount: 1,
+            backgroundColor: 0x000000,
+            images: [],
+            transcodingUsers: [],
+        },
+    ) => {
+        config;
     };
 
     // 在join后开启双流模式(大流/小流)
