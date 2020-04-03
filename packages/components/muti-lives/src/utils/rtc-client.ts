@@ -1,4 +1,4 @@
-import AgoraRTC, { Client, Stream, LiveTranscoding } from 'agora-rtc-sdk';
+import AgoraRTC, { Client, Stream, LiveTranscoding, TranscodingUser } from 'agora-rtc-sdk';
 import Pubsub from 'pubsub-js';
 import EventList from './custom-events';
 import { LiveConfig } from './define';
@@ -336,8 +336,12 @@ export default class RTCClient {
             images: [],
             transcodingUsers: [],
         },
+        users: Array<TranscodingUser>,
     ) => {
-        config;
+        this.rtc.client!.setLiveTranscoding({
+            ...config,
+            transcodingUsers: users,
+        });
     };
 
     // 在join后开启双流模式(大流/小流)
